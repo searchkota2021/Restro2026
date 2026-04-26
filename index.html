@@ -97,21 +97,65 @@
             </div>
 
             <div id="tables" class="view">
-                <h3 class="header-title">🪑 Floor Plan & Reservation</h3>
-                <div class="grid-cards">
-                    <div class="card" style="border-left: 4px solid var(--success);"><h3>Table 1</h3><p class="badge bg-green">Free</p></div>
-                    <div class="card" style="border-left: 4px solid var(--error);"><h3>Table 2</h3><p class="badge bg-red">Occupied (₹1,240)</p></div>
-                    <div class="card" style="border-left: 4px solid var(--warning);"><h3>Table 3</h3><p class="badge bg-yellow">Cleaning</p></div>
+    <h3 class="header-title">🪑 Floor Plan & Tables</h3>
+    
+    <div class="card" style="margin-bottom: 20px; padding: 15px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 10px;">
+            <div id="floor-tabs" style="display: flex; gap: 10px; overflow-x: auto; flex: 1;">
                 </div>
-                <div class="card">
-                    <h4>Add Reservation</h4>
-                    <form class="system-form form-grid" data-success="Table Reserved!">
-                        <div class="form-group"><label>Guest Name *</label><input type="text" required></div>
-                        <div class="form-group"><label>Time *</label><input type="time" required></div>
-                        <button type="submit" class="btn btn-primary" style="grid-column: 1 / -1;">Reserve Table</button>
-                    </form>
-                </div>
+            <button class="btn btn-outline" style="white-space: nowrap; margin-left: 15px;" onclick="showFloorForm()">+ Add Floor</button>
+        </div>
+        
+        <form id="floor-form" style="display: none; gap: 10px; align-items: flex-end;" onsubmit="handleFloorSubmit(event)">
+            <input type="hidden" id="floor-id">
+            <div class="form-group" style="margin: 0; flex: 1;">
+                <label>Floor / Area Name *</label>
+                <input type="text" id="floor-name" required placeholder="e.g. Rooftop, Main Dining">
             </div>
+            <button type="submit" class="btn btn-primary">Save Floor</button>
+            <button type="button" class="btn btn-outline" onclick="hideFloorForm()">Cancel</button>
+        </form>
+    </div>
+
+    <div class="split-layout">
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h4 id="active-floor-title" style="font-size: 16px; font-weight: 600;">Main Dining Tables</h4>
+                <button class="btn btn-primary" onclick="showTableForm()">+ Add Table</button>
+            </div>
+            
+            <div id="table-form-container" class="card" style="display: none; margin-bottom: 15px; background: #F9FAFB;">
+                <form id="table-form" style="display: flex; gap: 10px; align-items: flex-end;" onsubmit="handleTableSubmit(event)">
+                    <input type="hidden" id="table-id">
+                    <div class="form-group" style="margin: 0; flex: 1;">
+                        <label>Table Name/Number *</label>
+                        <input type="text" id="table-name" required placeholder="e.g. T-01, VIP-1">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Table</button>
+                    <button type="button" class="btn btn-outline" onclick="hideTableForm()">Cancel</button>
+                </form>
+            </div>
+
+            <div class="grid-cards" id="tables-container">
+                </div>
+        </div>
+
+        <div class="card">
+            <h4>Add Reservation</h4>
+            <form class="system-form form-grid" data-success="Table Reserved Successfully!">
+                <div class="form-group"><label>Guest Name *</label><input type="text" required></div>
+                <div class="form-group"><label>Time *</label><input type="time" required></div>
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>Select Table *</label>
+                    <select required id="reservation-table-select">
+                        </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="grid-column: 1 / -1; justify-content: center;">Reserve Table</button>
+            </form>
+        </div>
+    </div>
+</div>
+
 
             <div id="menu" class="view">
                 <div class="split-layout">
