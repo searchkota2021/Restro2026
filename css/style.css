@@ -79,6 +79,25 @@ table { width: 100%; border-collapse: collapse; margin-top: 10px; }
 th { background: #F9FAFB; padding: 12px; text-align: left; font-size: 12px; color: var(--text-muted); border-bottom: 1px solid var(--border); }
 td { padding: 12px; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--text-dark); }
 
+/* --- Floor & Table Management Specifics --- */
+.floor-tab {
+    padding: 8px 16px; border-radius: 20px; background: #F3F4F6; color: var(--text-muted);
+    cursor: pointer; font-weight: 600; white-space: nowrap; transition: 0.2s; border: 1px solid transparent;
+    display: flex; align-items: center; gap: 10px; font-size: 13px;
+}
+.floor-tab:hover { background: #E5E7EB; }
+.floor-tab.active { background: var(--primary-light); color: var(--primary-dark); border-color: var(--primary); }
+
+.icon-btn {
+    background: none; border: none; cursor: pointer; color: var(--text-muted);
+    padding: 2px 4px; border-radius: 4px; transition: 0.2s; font-size: 14px;
+}
+.icon-btn:hover { background: #E5E7EB; color: var(--text-dark); }
+.icon-btn.danger:hover { background: #FEE2E2; color: var(--error); }
+
+.table-actions { display: flex; gap: 5px; }
+
+
 /* Badges */
 .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
 .bg-green { background: #D1FAE5; color: #065F46; }
