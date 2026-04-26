@@ -157,34 +157,153 @@
 </div>
 
 
-            <div id="menu" class="view">
-                <div class="split-layout">
-                    <div class="card">
-                        <h3 class="header-title">➕ Add Menu Item</h3>
-                        <form class="system-form form-grid" data-success="Item added to menu!">
-                            <div class="form-group"><label>Item Name *</label><input type="text" required></div>
-                            <div class="form-group">
-                                <label>Category *</label>
-                                <select required><option>Starters</option><option>Main Course</option><option>Beverages</option></select>
-                            </div>
-                            <div class="form-group"><label>Price (₹) *</label><input type="number" required></div>
-                            <div class="form-group">
-                                <label>Type</label>
-                                <select><option>🟢 Veg</option><option>🔴 Non-Veg</option></select>
-                            </div>
-                            <button type="submit" class="btn btn-primary" style="grid-column: 1 / -1;">Save Item</button>
-                        </form>
+                        <div id="menu" class="view">
+                <h3 class="header-title">📋 Menu Master Configuration</h3>
+                
+                <div class="card" style="margin-bottom: 20px; padding: 10px 15px;">
+                    <div style="display: flex; gap: 10px; overflow-x: auto;">
+                        <button class="sub-tab active" onclick="switchMenuTab('menu-items')">🍔 Items</button>
+                        <button class="sub-tab" onclick="switchMenuTab('menu-categories')">📁 Categories</button>
+                        <button class="sub-tab" onclick="switchMenuTab('menu-groups')">🏢 Groups</button>
+                        <button class="sub-tab" onclick="switchMenuTab('menu-variants')">🔀 Variants</button>
+                        <button class="sub-tab" onclick="switchMenuTab('menu-taxes')">💰 Taxes</button>
                     </div>
-                    <div class="card">
-                        <h3 class="header-title">Current Menu</h3>
-                        <table class="table-responsive">
-                            <tr><th>Name</th><th>Category</th><th>Price</th></tr>
-                            <tr><td>Paneer Tikka</td><td>Starters</td><td>₹ 250</td></tr>
-                            <tr><td>Butter Chicken</td><td>Main</td><td>₹ 380</td></tr>
-                        </table>
+                </div>
+
+                <div id="menu-items" class="menu-sub-view active">
+                    <div class="split-layout">
+                        <div class="card">
+                            <h3 class="header-title">➕ Add New Item</h3>
+                            <form id="item-form" style="display: flex; flex-direction: column; gap: 15px;" onsubmit="handleItemSubmit(event)">
+                                <div class="form-grid">
+                                    <div class="form-group"><label>Item Name *</label><input type="text" id="item-name" required></div>
+                                    <div class="form-group">
+                                        <label>Category *</label>
+                                        <select id="item-category" required></select>
+                                    </div>
+                                    <div class="form-group"><label>Base Price (₹) *</label><input type="number" id="item-price" required></div>
+                                    <div class="form-group">
+                                        <label>Tax Profile *</label>
+                                        <select id="item-tax" required></select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Food Type</label>
+                                        <select id="item-type"><option>🟢 Veg</option><option>🔴 Non-Veg</option><option>🟡 Egg</option></select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Variant Group (Optional)</label>
+                                        <select id="item-variant"></select>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Item</button>
+                            </form>
+                        </div>
+                        <div class="card">
+                            <h3 class="header-title">Menu Items</h3>
+                            <table class="table-responsive">
+                                <thead><tr><th>Item</th><th>Category</th><th>Price</th><th>Tax</th></tr></thead>
+                                <tbody id="items-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="menu-categories" class="menu-sub-view" style="display: none;">
+                    <div class="split-layout">
+                        <div class="card">
+                            <h3 class="header-title">➕ Add Category</h3>
+                            <form onsubmit="handleCategorySubmit(event)">
+                                <div class="form-group"><label>Category Name *</label><input type="text" id="cat-name" required placeholder="e.g. Starters"></div>
+                                <div class="form-group">
+                                    <label>Belongs to Group *</label>
+                                    <select id="cat-group" required></select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Category</button>
+                            </form>
+                        </div>
+                        <div class="card">
+                            <h3 class="header-title">Categories</h3>
+                            <table class="table-responsive">
+                                <thead><tr><th>Category</th><th>Parent Group</th><th>Action</th></tr></thead>
+                                <tbody id="categories-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="menu-groups" class="menu-sub-view" style="display: none;">
+                    <div class="split-layout">
+                        <div class="card">
+                            <h3 class="header-title">➕ Add Group</h3>
+                            <form onsubmit="handleGroupSubmit(event)">
+                                <div class="form-group"><label>Group Name *</label><input type="text" id="group-name" required placeholder="e.g. Food, Bar"></div>
+                                <div class="form-group">
+                                    <label>Assign Printer *</label>
+                                    <select id="group-printer" required><option>Kitchen Printer 1</option><option>Bar Printer</option><option>Dessert Station</option></select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Group</button>
+                            </form>
+                        </div>
+                        <div class="card">
+                            <h3 class="header-title">Groups (Departments)</h3>
+                            <table class="table-responsive">
+                                <thead><tr><th>Group</th><th>Assigned Printer</th><th>Action</th></tr></thead>
+                                <tbody id="groups-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="menu-variants" class="menu-sub-view" style="display: none;">
+                    <div class="split-layout">
+                        <div class="card">
+                            <h3 class="header-title">➕ Add Variant Group</h3>
+                            <form onsubmit="handleVariantSubmit(event)">
+                                <div class="form-group"><label>Variant Name *</label><input type="text" id="var-name" required placeholder="e.g. Portion Size"></div>
+                                <div class="form-group"><label>Options (Comma separated) *</label><input type="text" id="var-options" required placeholder="e.g. Half, Full, Family"></div>
+                                <button type="submit" class="btn btn-primary">Save Variant</button>
+                            </form>
+                        </div>
+                        <div class="card">
+                            <h3 class="header-title">Variant Groups</h3>
+                            <table class="table-responsive">
+                                <thead><tr><th>Variant Group</th><th>Available Options</th></tr></thead>
+                                <tbody id="variants-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="menu-taxes" class="menu-sub-view" style="display: none;">
+                    <div class="split-layout">
+                        <div class="card">
+                            <h3 class="header-title">➕ Add Tax Profile</h3>
+                            <form onsubmit="handleTaxSubmit(event)">
+                                <div class="form-group"><label>Tax Name *</label><input type="text" id="tax-name" required placeholder="e.g. GST 5%"></div>
+                                <div class="form-grid">
+                                    <div class="form-group"><label>Rate (%) *</label><input type="number" id="tax-rate" step="0.01" required></div>
+                                    <div class="form-group">
+                                        <label>Calculation Type *</label>
+                                        <select id="tax-type" required>
+                                            <option value="forward">Forward (Exclusive / Add-on)</option>
+                                            <option value="backward">Backward (Inclusive)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Tax</button>
+                            </form>
+                        </div>
+                        <div class="card">
+                            <h3 class="header-title">Tax Profiles</h3>
+                            <table class="table-responsive">
+                                <thead><tr><th>Name</th><th>Rate</th><th>Type</th></tr></thead>
+                                <tbody id="taxes-table-body"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
+
 
             <div id="kitchen" class="view">
                 <h3 class="header-title">👨‍🍳 Live Kitchen Display (KDS)</h3>
