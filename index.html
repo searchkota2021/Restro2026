@@ -66,143 +66,189 @@
             </div>
 
             <div id="billing" class="view">
-                <div class="split-layout">
-                    <div class="card">
-                        <h3 class="header-title">🧾 New Order & KOT</h3>
-                        <form class="system-form" data-success="KOT Generated successfully!">
-                            <div class="form-grid">
-                                <div class="form-group"><label>Customer Name *</label><input type="text" required placeholder="John Doe"></div>
-                                <div class="form-group"><label>Mobile Number *</label><input type="tel" required pattern="[0-9]{10}" placeholder="10 digit number"></div>
-                                <div class="form-group"><label>Table / Token *</label><input type="text" required placeholder="T-12"></div>
-                                <div class="form-group">
-                                    <label>Order Type</label>
-                                    <select required><option>Dine-in</option><option>Takeaway</option><option>Delivery</option></select>
-                                </div>
-                            </div>
-                            <div class="form-group"><label>Add Item Manually</label><input type="text" placeholder="Search menu items..."></div>
-                            <button type="submit" class="btn btn-primary">🖨 Print KOT & Add to Bill</button>
-                        </form>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div id="billing-modes" style="display: flex; gap: 10px; background: var(--white); padding: 5px; border-radius: 8px; box-shadow: var(--shadow);">
+                        <button class="sub-tab active" onclick="switchBillingMode('quick', this)">⚡ Quick Order</button>
+                        <button class="sub-tab" onclick="switchBillingMode('dinein', this)">🍽️ Dine-In</button>
+                        <button class="sub-tab" onclick="switchBillingMode('delivery', this)">🛵 Delivery</button>
                     </div>
-                    <div class="card">
-                        <h3 class="header-title">Order Summary</h3>
-                        <div style="min-height: 200px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); border: 2px dashed var(--border); border-radius: 8px; margin-bottom: 15px;">
-                            No items added yet.
+                    <button class="btn btn-outline" style="border-color: var(--primary); color: var(--primary);" onclick="simulateQROrder()">📱 Simulate QR Order</button>
+                </div>
+
+                <div id="qr-orders-panel" style="display: none; margin-bottom: 15px;">
+                    <div class="card" style="border-left: 4px solid var(--warning); background: #FFFBEB;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h4 style="color: #B45309; margin-bottom: 5px;">🔔 New QR Order from Table 3</h4>
+                                <p style="font-size: 13px;">2x Garlic Naan, 1x Paneer Butter Masala</p>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <button class="btn btn-primary" onclick="acceptQROrder()">Accept & Fire KOT</button>
+                                <button class="btn btn-outline" onclick="rejectQROrder()">Reject</button>
+                            </div>
                         </div>
-                        <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 18px; margin-bottom: 15px;">
-                            <span>Total Amount:</span><span>₹ 0.00</span>
+                    </div>
+                </div>
+
+                <div class="split-layout">
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                        
+                        <div class="card" id="billing-context-card">
+                            <div id="context-quick" class="billing-context">
+                                <h4 style="margin-bottom: 10px;">Quick Bill (Walk-in)</h4>
+                                <input type="text" id="qb-name" placeholder="Customer Name (Optional)" style="margin-bottom: 10px;">
+                            </div>
+                            <div id="context-dinein" class="billing-context" style="display: none;">
+                                <h4 style="margin-bottom: 10px;">Table Allocation</h4>
+                                <select id="di-table" required>
+                                    <option value="">-- Select Active Table --</option>
+                                    </select>
+                            </div>
+                            <div id="context-delivery" class="billing-context" style="display: none;">
+                                <h4 style="margin-bottom: 10px;">CRM & Dispatch</h4>
+                                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                                    <input type="tel" id="del-phone" placeholder="Mobile Number *" pattern="[0-9]{10}">
+                                    <button class="btn btn-outline" onclick="lookupCRM()">🔍 Lookup</button>
+                                </div>
+                                <input type="text" id="del-name" placeholder="Customer Name *" required style="margin-bottom: 10px;">
+                                <textarea id="del-address" placeholder="Delivery Address *" required rows="2"></textarea>
+                            </div>
                         </div>
-                        <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="triggerToast('Bill settled successfully', 'success')">✅ Settle Bill</button>
+
+                        <div class="card" style="flex: 1; overflow-y: auto;">
+                            <input type="text" placeholder="🔍 Search menu items..." style="margin-bottom: 15px;" onkeyup="filterPOSMenu(this.value)">
+                            <div id="pos-menu-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px;">
+                                </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="display: flex; flex-direction: column;">
+                        <h3 class="header-title">🛒 Current Order</h3>
+                        
+                        <div id="cart-items" style="flex: 1; overflow-y: auto; border-bottom: 1px solid var(--border); margin-bottom: 15px; min-height: 250px;">
+                            <div style="text-align:center; padding:50px 0; color:var(--text-muted);">Cart is empty. Tap items to add.</div>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px; margin-bottom: 15px;">
+                            <div style="display: flex; justify-content: space-between;"><span>Subtotal</span><span id="cart-subtotal">₹0.00</span></div>
+                            <div style="display: flex; justify-content: space-between;"><span>Taxes</span><span id="cart-taxes">₹0.00</span></div>
+                            <div id="fee-row" style="display: flex; justify-content: space-between; color: var(--error);"><span>Dynamic Fees</span><span id="cart-fees">₹0.00</span></div>
+                            <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 18px; margin-top: 5px; padding-top: 5px; border-top: 1px dashed var(--border);">
+                                <span>Total Amount:</span><span id="cart-total">₹0.00</span>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <button class="btn btn-outline" style="justify-content: center; border-color: var(--warning); color: var(--warning);" onclick="fireKOT()">🔥 Fire KOT</button>
+                            <button class="btn btn-primary" style="justify-content: center;" onclick="settleBill()">✅ Settle Bill</button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div id="tables" class="view">
-    <h3 class="header-title">🪑 Floor Plan & Tables</h3>
-    
-    <div class="card" style="margin-bottom: 20px; padding: 15px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 10px;">
-            <div id="floor-tabs" style="display: flex; gap: 10px; overflow-x: auto; flex: 1;">
-                </div>
-            <button class="btn btn-outline" style="white-space: nowrap; margin-left: 15px;" onclick="showFloorForm()">+ Add Floor</button>
-        </div>
-        
-        <form id="floor-form" style="display: none; gap: 10px; align-items: flex-end;" onsubmit="handleFloorSubmit(event)">
-            <input type="hidden" id="floor-id">
-            <div class="form-group" style="margin: 0; flex: 1;">
-                <label>Floor / Area Name *</label>
-                <input type="text" id="floor-name" required placeholder="e.g. Rooftop, Main Dining">
-            </div>
-            <button type="submit" class="btn btn-primary">Save Floor</button>
-            <button type="button" class="btn btn-outline" onclick="hideFloorForm()">Cancel</button>
-        </form>
-    </div>
-
-    <div class="split-layout">
-        <div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h4 id="active-floor-title" style="font-size: 16px; font-weight: 600;">Main Dining Tables</h4>
-                <button class="btn btn-primary" onclick="showTableForm()">+ Add Table</button>
-            </div>
-            
-            <div id="table-form-container" class="card" style="display: none; margin-bottom: 15px; background: #F9FAFB;">
-                <form id="table-form" style="display: flex; gap: 10px; align-items: flex-end;" onsubmit="handleTableSubmit(event)">
-                    <input type="hidden" id="table-id">
-                    <div class="form-group" style="margin: 0; flex: 1;">
-                        <label>Table Name/Number *</label>
-                        <input type="text" id="table-name" required placeholder="e.g. T-01, VIP-1">
+                <h3 class="header-title">🪑 Floor Plan & Tables</h3>
+                
+                <div class="card" style="margin-bottom: 20px; padding: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 10px;">
+                        <div id="floor-tabs" style="display: flex; gap: 10px; overflow-x: auto; flex: 1;">
+                            </div>
+                        <button class="btn btn-outline" style="white-space: nowrap; margin-left: 15px;" onclick="showFloorForm()">+ Add Floor</button>
                     </div>
-                    <button type="submit" class="btn btn-primary">Save Table</button>
-                    <button type="button" class="btn btn-outline" onclick="hideTableForm()">Cancel</button>
-                </form>
+                    
+                    <form id="floor-form" style="display: none; gap: 10px; align-items: flex-end;" onsubmit="handleFloorSubmit(event)">
+                        <input type="hidden" id="floor-id">
+                        <div class="form-group" style="margin: 0; flex: 1;">
+                            <label>Floor / Area Name *</label>
+                            <input type="text" id="floor-name" required placeholder="e.g. Rooftop, Main Dining">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Floor</button>
+                        <button type="button" class="btn btn-outline" onclick="hideFloorForm()">Cancel</button>
+                    </form>
+                </div>
+
+                <div class="split-layout">
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h4 id="active-floor-title" style="font-size: 16px; font-weight: 600;">Main Dining Tables</h4>
+                            <button class="btn btn-primary" onclick="showTableForm()">+ Add Table</button>
+                        </div>
+                        
+                        <div id="table-form-container" class="card" style="display: none; margin-bottom: 15px; background: #F9FAFB;">
+                            <form id="table-form" style="display: flex; gap: 10px; align-items: flex-end;" onsubmit="handleTableSubmit(event)">
+                                <input type="hidden" id="table-id">
+                                <div class="form-group" style="margin: 0; flex: 1;">
+                                    <label>Table Name/Number *</label>
+                                    <input type="text" id="table-name" required placeholder="e.g. T-01, VIP-1">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Table</button>
+                                <button type="button" class="btn btn-outline" onclick="hideTableForm()">Cancel</button>
+                            </form>
+                        </div>
+
+                        <div class="grid-cards" id="tables-container">
+                            </div>
+                    </div>
+
+                    <div class="card">
+                        <h4>Add Reservation</h4>
+                        <form class="system-form form-grid" data-success="Table Reserved Successfully!">
+                            <div class="form-group"><label>Guest Name *</label><input type="text" required></div>
+                            <div class="form-group"><label>Time *</label><input type="time" required></div>
+                            <div class="form-group" style="grid-column: 1 / -1;">
+                                <label>Select Table *</label>
+                                <select required id="reservation-table-select">
+                                    </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="grid-column: 1 / -1; justify-content: center;">Reserve Table</button>
+                        </form>
+                    </div>
+                </div>
             </div>
 
-            <div class="grid-cards" id="tables-container">
-                </div>
-        </div>
-
-        <div class="card">
-            <h4>Add Reservation</h4>
-            <form class="system-form form-grid" data-success="Table Reserved Successfully!">
-                <div class="form-group"><label>Guest Name *</label><input type="text" required></div>
-                <div class="form-group"><label>Time *</label><input type="time" required></div>
-                <div class="form-group" style="grid-column: 1 / -1;">
-                    <label>Select Table *</label>
-                    <select required id="reservation-table-select">
-                        </select>
-                </div>
-                <button type="submit" class="btn btn-primary" style="grid-column: 1 / -1; justify-content: center;">Reserve Table</button>
-            </form>
-        </div>
-    </div>
-</div>
-
-
-                        <div id="menu" class="view">
+            <div id="menu" class="view">
                 <h3 class="header-title">📋 Menu Master Configuration</h3>
                 
                 <div class="card" style="margin-bottom: 20px; padding: 10px 15px;">
-    <div style="display: flex; gap: 10px; overflow-x: auto;">
-        <button class="sub-tab active" onclick="switchMenuTab('menu-items', this)">🍔 Items</button>
-        <button class="sub-tab" onclick="switchMenuTab('menu-categories', this)">📁 Categories</button>
-        <button class="sub-tab" onclick="switchMenuTab('menu-groups', this)">🏢 Groups</button>
-        <button class="sub-tab" onclick="switchMenuTab('menu-variants', this)">🔀 Variants</button>
-        <button class="sub-tab" onclick="switchMenuTab('menu-taxes', this)">💰 Taxes</button>
-    </div>
-</div>
-
+                    <div style="display: flex; gap: 10px; overflow-x: auto;">
+                        <button class="sub-tab active" onclick="switchMenuTab('menu-items', this)">🍔 Items</button>
+                        <button class="sub-tab" onclick="switchMenuTab('menu-categories', this)">📁 Categories</button>
+                        <button class="sub-tab" onclick="switchMenuTab('menu-groups', this)">🏢 Groups</button>
+                        <button class="sub-tab" onclick="switchMenuTab('menu-variants', this)">🔀 Variants</button>
+                        <button class="sub-tab" onclick="switchMenuTab('menu-taxes', this)">💰 Taxes</button>
+                    </div>
+                </div>
 
                 <div id="menu-items" class="menu-sub-view active">
                     <div class="split-layout">
                         <div class="card">
                             <h3 class="header-title">➕ Add New Item</h3>
-                            <form id="item-form" style="display: flex; flex-direction: column; gap: 15px;" onsubmit="handleItemSubmit(event)">
+                            <form id="item-form" onsubmit="handleItemSubmit(event)" style="display: flex; flex-direction: column; gap: 15px;">
                                 <div class="form-grid">
                                     <div class="form-group"><label>Item Name *</label><input type="text" id="item-name" required></div>
-                                    <div class="form-group">
-                                        <label>Category *</label>
-                                        <select id="item-category" required></select>
+                                    <div class="form-group"><label>Category *</label><select id="item-category" required></select></div>
+                                </div>
+                                
+                                <div style="background: #F9FAFB; padding: 10px; border-radius: 8px; border: 1px solid var(--border);">
+                                    <label style="margin-bottom: 10px; display: block;">Tiered Pricing (₹) *</label>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                                        <div><label style="font-size: 11px;">Dine-In</label><input type="number" id="price-dinein" required></div>
+                                        <div><label style="font-size: 11px;">Takeaway (Quick)</label><input type="number" id="price-takeaway" required></div>
+                                        <div><label style="font-size: 11px;">Delivery (Zomato)</label><input type="number" id="price-delivery" required></div>
                                     </div>
-                                    <div class="form-group"><label>Base Price (₹) *</label><input type="number" id="item-price" required></div>
-                                    <div class="form-group">
-                                        <label>Tax Profile *</label>
-                                        <select id="item-tax" required></select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Food Type</label>
-                                        <select id="item-type"><option>🟢 Veg</option><option>🔴 Non-Veg</option><option>🟡 Egg</option></select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Variant Group (Optional)</label>
-                                        <select id="item-variant"></select>
-                                    </div>
+                                </div>
+
+                                <div class="form-grid">
+                                    <div class="form-group"><label>Tax Profile *</label><select id="item-tax" required></select></div>
+                                    <div class="form-group"><label>Food Type</label><select id="item-type"><option>🟢 Veg</option><option>🔴 Non-Veg</option></select></div>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Save Item</button>
                             </form>
                         </div>
                         <div class="card">
-                            <h3 class="header-title">Menu Items</h3>
+                            <h3 class="header-title">Menu Database</h3>
                             <table class="table-responsive">
-                                <thead><tr><th>Item</th><th>Category</th><th>Price</th><th>Tax</th></tr></thead>
+                                <thead><tr><th>Item</th><th>Category</th><th>Prices (DI / TA / DL)</th></tr></thead>
                                 <tbody id="items-table-body"></tbody>
                             </table>
                         </div>
@@ -304,7 +350,6 @@
                     </div>
                 </div>
             </div>
-
 
             <div id="kitchen" class="view">
                 <h3 class="header-title">👨‍🍳 Live Kitchen Display (KDS)</h3>
