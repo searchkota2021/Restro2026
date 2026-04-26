@@ -67,6 +67,151 @@ function triggerToast(message, type) {
 }
 
 // ==========================================
+// HIERARCHICAL MENU MANAGEMENT LOGIC
+// ==========================================
+
+// 1. Data Store (Simulating Database)
+let menuData = {
+    groups: [{ id: 1, name: 'Food', printer: 'Kitchen Printer 1' }],
+    categories: [{ id: 1, name: 'Main Course', groupId: 1 }],
+    taxes: [
+        { id: 1, name: 'GST 5% (Exclusive)', rate: 5, type: 'forward' },
+        { id: 2, name: 'GST 5% (Inclusive)', rate: 5, type: 'backward' }
+    ],
+    variants: [{ id: 1, name: 'Portion Size', options: ['Half', 'Full'] }],
+    items: [{ id: 1, name: 'Butter Chicken', catId: 1, price: 380, taxId: 1, varId: 1, type: '🔴 Non-Veg' }]
+};
+
+// 2. Tab Switching Logic for Menu
+function switchMenuTab(tabId) {
+    document.querySelectorAll('.menu-sub-view').forEach(v => v.style.display = 'none');
+    document.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
+    
+    document.getElementById(tabId).style.display = 'block';
+    event.currentTarget.classList.add('active');
+}
+
+// 3. Render Functions (Tables)
+function renderMenuTables() {
+    // Groups Table
+    document.getElementById('groups-table-body').innerHTML = menuData.groups.map(g => 
+        `<tr><td>${g.name}</td><td><span class="badge bg-yellow">${g.printer}</span></td>
+        <td><button class="icon-btn danger" onclick="deleteMenuData('groups', ${g.id})">🗑️</button></td></tr>`
+    ).join('');
+
+    // Categories Table
+    document.getElementById('categories-table-body').innerHTML = menuData.categories.map(c => {
+        const group = menuData.groups.find(g => g.id == c.groupId)?.name || 'Unknown';
+        return `<tr><td>${c.name}</td><td>${group}</td>
+        <td><button class="icon-btn danger" onclick="deleteMenuData('categories', ${c.id})">🗑️</button></td></tr>`;
+    }).join('');
+
+    // Taxes Table
+    document.getElementById('taxes-table-body').innerHTML = menuData.taxes.map(t => {
+        const typeBadge = t.type === 'forward' ? '<span class="badge bg-red">Forward (+)</span>' : '<span class="badge bg-green">Backward (Inc)</span>';
+        return `<tr><td>${t.name}</td><td>${t.rate}%</td><td>${typeBadge}</td></tr>`;
+    }).join('');
+
+    // Variants Table
+    document.getElementById('variants-table-body').innerHTML = menuData.variants.map(v => 
+        `<tr><td>${v.name}</td><td>${v.options.map(o => `<span class="badge bg-gray" style="margin-right:5px; border:1px solid #ddd;">${o}</span>`).join('')}</td></tr>`
+    ).join('');
+
+    // Items Table
+    document.getElementById('items-table-body').innerHTML = menuData.items.map(i => {
+        const cat = menuData.categories.find(c => c.id == i.catId)?.name || 'N/A';
+        const tax = menuData.taxes.find(t => t.id == i.taxId)?.name || 'N/A';
+        return `<tr><td><b>${i.name}</b> <span style="font-size:10px;">${i.type}</span></td><td>${cat}</td><td>₹${i.price}</td><td>${tax}</td></tr>`;
+    }).join('');
+
+    updateMenuDropdowns(); // Refresh form selects
+}
+
+// 4. Update Form Dropdowns
+function updateMenuDropdowns() {
+    const setDropdown = (id, defaultText, array, valueKey, textKey) => {
+        const select = document.getElementById(id);
+        if(!select) return;
+        select.innerHTML = `<option value="">-- ${defaultText} --</option>` + 
+            array.map(item => `<option value="${item.id}">${item[textKey]}</option>`).join('');
+    };
+
+    setDropdown('cat-group', 'Select Group', menuData.groups, 'id', 'name');
+    setDropdown('item-category', 'Select Category', menuData.categories, 'id', 'name');
+    setDropdown('item-tax', 'Select Tax Profile', menuData.taxes, 'id', 'name');
+    
+    // Variant is optional
+    const varSelect = document.getElementById('item-variant');
+    if(varSelect) {
+        varSelect.innerHTML = `<option value="">-- No Variant --</option>` + 
+            menuData.variants.map(v => `<option value="${v.id}">${v.name}</option>`).join('');
+    }
+}
+
+// 5. Form Submission Handlers
+function handleGroupSubmit(e) {
+    e.preventDefault();
+    menuData.groups.push({ id: Date.now(), name: document.getElementById('group-name').value, printer: document.getElementById('group-printer').value });
+    triggerToast("Group Created! You can now add categories to it.", "success");
+    e.target.reset(); renderMenuTables();
+}
+
+function handleCategorySubmit(e) {
+    e.preventDefault();
+    menuData.categories.push({ id: Date.now(), name: document.getElementById('cat-name').value, groupId: document.getElementById('cat-group').value });
+    triggerToast("Category Created! You can now add items to it.", "success");
+    e.target.reset(); renderMenuTables();
+}
+
+function handleTaxSubmit(e) {
+    e.preventDefault();
+    menuData.taxes.push({ id: Date.now(), name: document.getElementById('tax-name').value, rate: document.getElementById('tax-rate').value, type: document.getElementById('tax-type').value });
+    triggerToast("Tax Profile Saved!", "success");
+    e.target.reset(); renderMenuTables();
+}
+
+function handleVariantSubmit(e) {
+    e.preventDefault();
+    const opts = document.getElementById('var-options').value.split(',').map(o => o.trim());
+    menuData.variants.push({ id: Date.now(), name: document.getElementById('var-name').value, options: opts });
+    triggerToast("Variant Group Created!", "success");
+    e.target.reset(); renderMenuTables();
+}
+
+function handleItemSubmit(e) {
+    e.preventDefault();
+    menuData.items.push({
+        id: Date.now(), name: document.getElementById('item-name').value,
+        catId: document.getElementById('item-category').value, price: document.getElementById('item-price').value,
+        taxId: document.getElementById('item-tax').value, type: document.getElementById('item-type').value,
+        varId: document.getElementById('item-variant').value || null
+    });
+    triggerToast("Menu Item Successfully Added!", "success");
+    e.target.reset(); renderMenuTables();
+}
+
+// Global Delete Function (Safeguard added)
+function deleteMenuData(type, id) {
+    if(type === 'groups' && menuData.categories.some(c => c.groupId == id)) {
+        triggerToast("Cannot delete: Group contains categories. Delete them first.", "error"); return;
+    }
+    if(type === 'categories' && menuData.items.some(i => i.catId == id)) {
+        triggerToast("Cannot delete: Category contains items. Delete them first.", "error"); return;
+    }
+    if(confirm(`Delete this ${type.slice(0, -1)}?`)) {
+        menuData[type] = menuData[type].filter(item => item.id !== id);
+        triggerToast("Deleted successfully", "success");
+        renderMenuTables();
+    }
+}
+
+// Initialize Menu Module on Load
+document.addEventListener('DOMContentLoaded', () => {
+    if(typeof renderMenuTables === 'function') renderMenuTables();
+});
+
+
+// ==========================================
 // FLOOR & TABLE MANAGEMENT LOGIC
 // ==========================================
 
