@@ -73,6 +73,18 @@ input:focus, select:focus { border-color: var(--primary); background: var(--whit
 .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-dark); }
 .btn-outline:hover { background: #F3F4F6; }
 
+/* --- Menu Sub-Navigation --- */
+.sub-tab {
+    padding: 8px 20px; background: transparent; border: none; font-size: 14px;
+    font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent;
+    transition: 0.2s; white-space: nowrap;
+}
+.sub-tab:hover { color: var(--text-dark); }
+.sub-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+.menu-sub-view { animation: fadeIn 0.2s ease-in; }
+
+
+
 /* Tables */
 .table-responsive { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; margin-top: 10px; }
