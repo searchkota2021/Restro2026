@@ -161,14 +161,15 @@
                 <h3 class="header-title">📋 Menu Master Configuration</h3>
                 
                 <div class="card" style="margin-bottom: 20px; padding: 10px 15px;">
-                    <div style="display: flex; gap: 10px; overflow-x: auto;">
-                        <button class="sub-tab active" onclick="switchMenuTab('menu-items')">🍔 Items</button>
-                        <button class="sub-tab" onclick="switchMenuTab('menu-categories')">📁 Categories</button>
-                        <button class="sub-tab" onclick="switchMenuTab('menu-groups')">🏢 Groups</button>
-                        <button class="sub-tab" onclick="switchMenuTab('menu-variants')">🔀 Variants</button>
-                        <button class="sub-tab" onclick="switchMenuTab('menu-taxes')">💰 Taxes</button>
-                    </div>
-                </div>
+    <div style="display: flex; gap: 10px; overflow-x: auto;">
+        <button class="sub-tab active" onclick="switchMenuTab('menu-items', this)">🍔 Items</button>
+        <button class="sub-tab" onclick="switchMenuTab('menu-categories', this)">📁 Categories</button>
+        <button class="sub-tab" onclick="switchMenuTab('menu-groups', this)">🏢 Groups</button>
+        <button class="sub-tab" onclick="switchMenuTab('menu-variants', this)">🔀 Variants</button>
+        <button class="sub-tab" onclick="switchMenuTab('menu-taxes', this)">💰 Taxes</button>
+    </div>
+</div>
+
 
                 <div id="menu-items" class="menu-sub-view active">
                     <div class="split-layout">
