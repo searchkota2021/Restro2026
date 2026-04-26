@@ -83,13 +83,22 @@ let menuData = {
 };
 
 // 2. Tab Switching Logic for Menu
-function switchMenuTab(tabId) {
+function switchMenuTab(tabId, element) {
+    // Hide all sub-views
     document.querySelectorAll('.menu-sub-view').forEach(v => v.style.display = 'none');
+    
+    // Remove active class from all tabs
     document.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
     
+    // Show the selected sub-view
     document.getElementById(tabId).style.display = 'block';
-    event.currentTarget.classList.add('active');
+    
+    // Add active class to the clicked tab
+    if (element) {
+        element.classList.add('active');
+    }
 }
+
 
 // 3. Render Functions (Tables)
 function renderMenuTables() {
