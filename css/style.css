@@ -1,17 +1,8 @@
 :root {
-    --primary: #FF5A1F;
-    --primary-dark: #E14910;
-    --primary-light: rgba(255, 90, 31, 0.1);
-    --sidebar-bg: #111827;
-    --sidebar-hover: #1F2937;
-    --bg-main: #F3F4F6;
-    --white: #FFFFFF;
-    --text-dark: #111827;
-    --text-muted: #6B7280;
-    --border: #E5E7EB;
-    --success: #10B981;
-    --error: #EF4444;
-    --warning: #F59E0B;
+    --primary: #FF5A1F; --primary-dark: #E14910; --primary-light: rgba(255, 90, 31, 0.1);
+    --sidebar-bg: #111827; --sidebar-hover: #1F2937; --bg-main: #F3F4F6;
+    --white: #FFFFFF; --text-dark: #111827; --text-muted: #6B7280;
+    --border: #E5E7EB; --success: #10B981; --error: #EF4444; --warning: #F59E0B;
     --shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
@@ -38,6 +29,7 @@ header { background: var(--white); height: 60px; padding: 0 20px; display: flex;
 /* UI Components */
 .card { background: var(--white); padding: 20px; border-radius: 10px; border: 1px solid var(--border); box-shadow: var(--shadow); }
 .grid-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
+.billing-layout { display: grid; grid-template-columns: 60% 40%; gap: 20px; height: calc(100vh - 160px); }
 .split-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 .form-group { margin-bottom: 15px; }
@@ -49,36 +41,34 @@ input:focus, select:focus { border-color: var(--primary); background: var(--whit
 .btn { padding: 10px 18px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; min-height: 44px; display: inline-flex; align-items: center; }
 .btn-primary { background: var(--primary); color: white; }
 .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-dark); }
-.table-responsive { width: 100%; border-collapse: collapse; }
+.table-container { width: 100%; overflow-x: auto; }
+.table-responsive { width: 100%; border-collapse: collapse; min-width: 600px; }
 th { background: #F9FAFB; padding: 12px; text-align: left; font-size: 12px; color: var(--text-muted); border-bottom: 1px solid var(--border); }
 td { padding: 12px; border-bottom: 1px solid var(--border); font-size: 14px; }
 .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
-.bg-green { background: #D1FAE5; color: #065F46; }
-.bg-red { background: #FEE2E2; color: #991B1B; }
-.bg-yellow { background: #FEF3C7; color: #92400E; }
-.bg-gray { background: #F3F4F6; color: #4B5563; }
+.bg-green { background: #D1FAE5; color: #065F46; } .bg-red { background: #FEE2E2; color: #991B1B; } .bg-yellow { background: #FEF3C7; color: #92400E; } .bg-gray { background: #F3F4F6; color: #4B5563; }
 
 /* Menu Tabs */
 .sub-tab { padding: 10px 20px; background: none; border: none; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; min-height: 44px; }
 .sub-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
 .menu-sub-view { animation: fadeIn 0.2s ease-in; }
 
+/* Table Cards */
+.table-card-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+.t-card { border: 1px solid var(--border); border-radius: 8px; padding: 15px; background: var(--white); box-shadow: var(--shadow); }
+.t-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-weight: 700; font-size: 16px; }
+
 /* POS Grid */
 .pos-item-card { border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; background: var(--white); display: flex; flex-direction: column; justify-content: space-between; height: 100px; }
+.pos-item-card.disabled { opacity: 0.5; pointer-events: none; background: #eee; }
 .pos-item-name { font-weight: 600; font-size: 13px; margin-bottom: 5px; }
 .pos-item-price { color: var(--primary-dark); font-weight: 700; font-size: 14px; }
 .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px dashed var(--border); }
 .cart-qty-ctrl { display: flex; align-items: center; gap: 8px; background: #F3F4F6; border-radius: 4px; padding: 2px 5px; }
 .cart-qty-btn { background: none; border: none; font-size: 16px; font-weight: 700; cursor: pointer; color: var(--primary); padding: 0 5px; }
 
-/* Table Management Floor Tabs */
-.floor-tab { padding: 8px 16px; border-radius: 20px; background: #F3F4F6; color: var(--text-muted); cursor: pointer; font-weight: 600; white-space: nowrap; transition: 0.2s; border: 1px solid transparent; display: flex; align-items: center; gap: 10px; font-size: 13px;}
-.floor-tab:hover { background: #E5E7EB; }
-.floor-tab.active { background: var(--primary-light); color: var(--primary-dark); border-color: var(--primary); }
-.icon-btn { background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 2px 4px; border-radius: 4px; transition: 0.2s; font-size: 14px;}
-.icon-btn:hover { background: #E5E7EB; color: var(--text-dark); }
-.icon-btn.danger:hover { background: #FEE2E2; color: var(--error); }
-.table-actions { display: flex; gap: 5px; }
+/* Modals */
+.modal-content { background: var(--white); border-radius: 12px; padding: 20px; }
 
 /* Toasts */
 #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
@@ -91,7 +81,8 @@ td { padding: 12px; border-bottom: 1px solid var(--border); font-size: 14px; }
     #sidebar:hover { width: 220px; position: absolute; height: 100%; box-shadow: 5px 0 15px rgba(0,0,0,0.2); }
     .brand-text, .nav-text { opacity: 0; transition: 0.2s; }
     #sidebar:hover .brand-text, #sidebar:hover .nav-text { opacity: 1; }
-    .grid-cards { grid-template-columns: repeat(2, 1fr); }
+    .grid-cards, .table-card-grid { grid-template-columns: repeat(3, 1fr); }
+    .billing-layout { grid-template-columns: 1fr; grid-template-rows: 50vh auto; height: auto; }
 }
 
 /* Mobile (< 768px) */
@@ -101,8 +92,9 @@ td { padding: 12px; border-bottom: 1px solid var(--border); font-size: 14px; }
     #sidebar.open { left: 0; }
     .brand-text, .nav-text { opacity: 1; }
     .menu-toggle { display: block; }
-    .grid-cards { grid-template-columns: 1fr; }
+    .grid-cards, .table-card-grid { grid-template-columns: repeat(2, 1fr); }
     .split-layout { grid-template-columns: 1fr; }
     .form-grid { grid-template-columns: 1fr; }
     .card { padding: 12px; }
+    .modal-content { position: absolute; bottom: 0; border-radius: 20px 20px 0 0; } /* Bottom Sheet */
 }
