@@ -13,6 +13,13 @@ function switchTab(viewId, element) {
     if(window.innerWidth <= 767) toggleMenu();
 }
 
+function switchMenuTab(tabId, element) {
+    document.querySelectorAll('.menu-sub-view').forEach(v => v.style.display = 'none');
+    document.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(tabId).style.display = 'block';
+    if(element) element.classList.add('active');
+}
+
 function formatIN(amount) { return Number(amount).toLocaleString('en-IN', { minimumFractionDigits: 2 }); }
 
 function triggerToast(msg, type) {
@@ -23,3 +30,9 @@ function triggerToast(msg, type) {
     container.appendChild(toast);
     setTimeout(() => toast.remove(), 3000);
 }
+
+document.querySelectorAll('.system-form').forEach(f => f.addEventListener('submit', function(e){ 
+    e.preventDefault(); 
+    triggerToast(this.getAttribute('data-success')||"Action completed successfully", "success"); 
+    this.reset(); 
+}));
