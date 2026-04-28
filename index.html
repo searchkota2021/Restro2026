@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RestroOS | Professional POS v2.0</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RestroOS | Professional POS v2.1</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -15,21 +15,14 @@
             <div class="nav-item active" onclick="switchTab('dashboard', this)">📊 <span class="nav-text">Dashboard</span></div>
             <div class="nav-item" onclick="switchTab('billing', this)">🧾 <span class="nav-text">Billing & KOT</span></div>
             <div class="nav-item" onclick="switchTab('tables', this)">🪑 <span class="nav-text">Tables</span></div>
-            <div class="nav-item" onclick="switchTab('menu', this)">📋 <span class="nav-text">Menu</span></div>
-            <div class="nav-item" onclick="switchTab('kitchen', this)">👨‍🍳 <span class="nav-text">Kitchen Display</span></div>
+            <div class="nav-item" onclick="switchTab('menu', this)">📋 <span class="nav-text">Menu Master</span></div>
+            <div class="nav-item" onclick="switchTab('kitchen', this)">👨‍🍳 <span class="nav-text">Kitchen (KDS)</span></div>
             <div class="nav-divider"></div>
             <div class="nav-item" onclick="switchTab('online-orders', this)">🛵 <span class="nav-text">Online Orders</span></div>
-            <div class="nav-item" onclick="switchTab('tracking', this)">📍 <span class="nav-text">Live Tracking</span></div>
-            <div class="nav-divider"></div>
             <div class="nav-item" onclick="switchTab('inventory', this)">📦 <span class="nav-text">Inventory</span></div>
-            <div class="nav-item" onclick="switchTab('crm', this)">👥 <span class="nav-text">CRM</span></div>
-            <div class="nav-item" onclick="switchTab('loyalty', this)">⭐ <span class="nav-text">Loyalty & Rewards</span></div>
-            <div class="nav-item" onclick="switchTab('feedback', this)">💬 <span class="nav-text">Feedback</span></div>
+            <div class="nav-item" onclick="switchTab('crm', this)">👥 <span class="nav-text">CRM & Loyalty</span></div>
             <div class="nav-divider"></div>
-            <div class="nav-item" onclick="switchTab('token', this)">🎫 <span class="nav-text">Token System</span></div>
-            <div class="nav-item" onclick="switchTab('expenses', this)">💸 <span class="nav-text">Expenses</span></div>
             <div class="nav-item" onclick="switchTab('reports', this)">📈 <span class="nav-text">Reports</span></div>
-            <div class="nav-item" onclick="switchTab('access', this)">🔐 <span class="nav-text">Access Control</span></div>
         </div>
     </nav>
 
@@ -41,7 +34,6 @@
             </div>
             <div style="display: flex; align-items: center; gap: 15px;">
                 <span style="font-weight: 500; color: var(--text-muted);" id="clock">00:00:00</span>
-                <button class="btn btn-outline" onclick="logout()">🚪 Logout</button>
             </div>
         </header>
 
@@ -54,137 +46,113 @@
                     <div class="card"><div class="card-title">Tables Occupied</div><div class="card-value" id="stat-tables">0</div></div>
                     <div class="card"><div class="card-title">Pending KOTs</div><div class="card-value" id="stat-kots">0</div></div>
                 </div>
-                <div class="split-layout">
-                    <div class="card">
-                        <h3 class="header-title">🔥 Top Selling Items</h3>
+                <div class="card">
+                    <h3 class="header-title">🔥 Top Selling Items</h3>
+                    <div class="table-container">
                         <table class="table-responsive">
                             <thead><tr><th>Item</th><th>Qty Sold</th><th>Revenue</th></tr></thead>
-                            <tbody id="top-selling-body">
-                                <tr><td colspan="3" style="text-align: center; color: var(--text-muted);">Awaiting settled bills...</td></tr>
-                            </tbody>
+                            <tbody id="top-selling-body"><tr><td colspan="3" style="text-align: center;">Awaiting settled bills...</td></tr></tbody>
                         </table>
-                    </div>
-                    <div class="card">
-                        <h3 class="header-title">⚠️ Pending Actions</h3>
-                        <ul style="list-style: none; padding: 0; line-height: 2;">
-                            <li style="color: var(--error);">🔴 3 KOTs pending in kitchen</li>
-                            <li style="color: var(--warning);">🟡 2 Online orders need acceptance</li>
-                        </ul>
                     </div>
                 </div>
             </div>
 
             <div id="billing" class="view">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-                    <div id="billing-modes" style="display: flex; gap: 10px; background: var(--white); padding: 5px; border-radius: 8px; box-shadow: var(--shadow); overflow-x: auto;">
+                <div style="display: flex; gap: 10px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px;">
+                    <div id="billing-modes" style="display: flex; gap: 10px; background: var(--white); padding: 5px; border-radius: 8px; box-shadow: var(--shadow); white-space: nowrap;">
                         <button class="sub-tab active" onclick="switchBillingMode('quick', this)">⚡ Quick Order</button>
                         <button class="sub-tab" onclick="switchBillingMode('dinein', this)">🍽️ Dine-In</button>
                         <button class="sub-tab" onclick="switchBillingMode('delivery', this)">🛵 Delivery</button>
-                    </div>
-                    <button class="btn btn-outline" style="border-color: var(--primary); color: var(--primary);" onclick="simulateQROrder()">📱 Simulate QR Order</button>
-                </div>
-
-                <div id="qr-orders-panel" style="display: none; margin-bottom: 15px;">
-                    <div class="card" style="border-left: 4px solid var(--warning); background: #FFFBEB;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                            <div><h4 style="color: #B45309;">🔔 New QR Order from Table 3</h4><p style="font-size: 13px;">2x Garlic Naan, 1x Paneer Butter Masala</p></div>
-                            <div style="display: flex; gap: 10px;"><button class="btn btn-primary" onclick="acceptQROrder()">Accept & Fire KOT</button><button class="btn btn-outline" onclick="rejectQROrder()">Reject</button></div>
-                        </div>
                     </div>
                 </div>
 
                 <div class="billing-layout">
                     <div style="display: flex; flex-direction: column; gap: 15px;">
                         
-                        <div class="card" style="padding: 15px; display: flex; align-items: center; gap: 10px;">
-                            <input type="tel" id="bill-phone" placeholder="Customer Phone (Lookup)" style="flex: 1;">
-                            <button class="btn btn-outline" onclick="lookupCRM()">🔍 Find</button>
-                            <div id="active-customer-info" style="font-size: 12px; color: var(--text-muted); flex: 2;">Walk-in Customer</div>
-                        </div>
-
                         <div class="card" id="billing-context-card">
-                            <div id="context-quick" class="billing-context"><h4 style="margin-bottom: 10px;">Quick Bill (Walk-in)</h4></div>
-                            <div id="context-dinein" class="billing-context" style="display: none;"><h4 style="margin-bottom: 10px;">Table Allocation</h4><select id="di-table"><option value="">-- Select Active Table --</option></select></div>
-                            <div id="context-delivery" class="billing-context" style="display: none;"><h4 style="margin-bottom: 10px;">Dispatch Details</h4><textarea id="del-address" placeholder="Delivery Address *" rows="2"></textarea></div>
+                            <div id="context-quick" class="billing-context"><h4>Quick Bill (Walk-in)</h4></div>
+                            
+                            <div id="context-dinein" class="billing-context" style="display: none;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                    <h4 style="margin: 0;">Table Allocation</h4>
+                                    <span id="active-billing-table" style="font-weight: 700; color: var(--primary);">None Selected</span>
+                                </div>
+                                <div id="billing-table-container">
+                                    </div>
+                            </div>
+                            
+                            <div id="context-delivery" class="billing-context" style="display: none;">
+                                <h4>Delivery Details</h4>
+                                <div class="form-grid" style="margin-top:10px;">
+                                    <input type="tel" id="del-phone" placeholder="Mobile Number *" onblur="lookupCRM(this.value)">
+                                    <input type="text" id="del-name" placeholder="Customer Name *">
+                                    <textarea id="del-address" placeholder="Delivery Address *" style="grid-column: 1/-1;" rows="2"></textarea>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="card" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column;">
-                            <div style="display: flex; gap: 10px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px;" id="pos-group-filters">
-                                <button class="badge bg-gray" onclick="filterPOSMenu('')">All</button>
-                            </div>
+                        <div class="card" style="flex: 1; display: flex; flex-direction: column;">
                             <input type="text" placeholder="🔍 Search menu items..." style="margin-bottom: 15px;" onkeyup="filterPOSMenu(this.value)">
-                            <div id="pos-menu-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; align-content: start;"></div>
+                            <div id="pos-menu-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; overflow-y: auto; align-content: start; flex:1;"></div>
                         </div>
                     </div>
 
                     <div class="card" style="display: flex; flex-direction: column; height: 100%;">
                         <h3 class="header-title">🛒 Current Order</h3>
-                        <div id="cart-items" style="flex: 1; overflow-y: auto; border-bottom: 1px solid var(--border); margin-bottom: 15px; min-height: 250px;">
-                            <div style="text-align:center; padding:50px 0; color:var(--text-muted);">Cart is empty. Tap items to add.</div>
+                        <div id="cart-items" style="flex: 1; overflow-y: auto; border-bottom: 1px solid var(--border); margin-bottom: 15px; min-height: 200px;">
+                            <div style="text-align:center; padding:50px 0; color:var(--text-muted);">Cart is empty.</div>
                         </div>
                         <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px; margin-bottom: 15px;">
                             <div style="display: flex; justify-content: space-between;"><span>Subtotal</span><span id="cart-subtotal">₹0.00</span></div>
                             <div style="display: flex; justify-content: space-between;"><span>Taxes</span><span id="cart-taxes">₹0.00</span></div>
-                            <div style="display: flex; justify-content: space-between; color: var(--error);"><span>Dynamic Fees</span><span id="cart-fees">₹0.00</span></div>
-                            <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 18px; margin-top: 5px; padding-top: 5px; border-top: 1px dashed var(--border);">
+                            <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 18px; border-top: 1px dashed var(--border); padding-top: 5px;">
                                 <span>Total Amount:</span><span id="cart-total">₹0.00</span>
                             </div>
                         </div>
                         <div class="form-grid">
-                            <button class="btn btn-outline" style="justify-content: center; border-color: var(--warning); color: var(--warning);" onclick="fireKOT()">🔥 Fire KOT</button>
+                            <button class="btn btn-outline" style="border-color: var(--warning); color: var(--warning); justify-content: center;" onclick="fireKOT()">🔥 Fire KOT</button>
                             <button class="btn btn-primary" style="justify-content: center;" onclick="settleBill()">✅ Settle Bill</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div id="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index: 2000; justify-content:center; align-items:center;">
-                <div class="card modal-content" style="width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; position: relative;">
-                    <h3 id="modal-title" style="margin-bottom: 15px;">Customize Item</h3>
-                    <div id="modal-body"></div>
-                    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; border-top: 1px solid var(--border); padding-top: 15px;">
-                        <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
-                        <button class="btn btn-primary" id="modal-confirm-btn">Confirm</button>
-                    </div>
-                </div>
-            </div>
-
             <div id="tables" class="view">
                 <h3 class="header-title">🪑 Floor Plan & Tables</h3>
+                
                 <div class="card" style="margin-bottom: 20px; padding: 15px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 10px;">
                         <div id="floor-tabs" style="display: flex; gap: 10px; overflow-x: auto; flex: 1;"></div>
-                        <button class="btn btn-outline" style="white-space: nowrap; margin-left: 15px;" onclick="document.getElementById('floor-form').style.display='flex'">+ Add Floor</button>
+                        <button class="btn btn-outline" onclick="showFloorForm()">+ Add Floor</button>
                     </div>
                     <form id="floor-form" style="display: none; gap: 10px; align-items: flex-end;" onsubmit="handleFloorSubmit(event)">
                         <input type="hidden" id="floor-id">
-                        <div class="form-group" style="margin: 0; flex: 1;"><label>Floor / Area Name *</label><input type="text" id="floor-name" required></div>
+                        <div class="form-group" style="margin: 0; flex: 1;"><label>Floor Name *</label><input type="text" id="floor-name" required></div>
                         <button type="submit" class="btn btn-primary">Save Floor</button>
                         <button type="button" class="btn btn-outline" onclick="this.parentElement.style.display='none'">Cancel</button>
                     </form>
                 </div>
+
                 <div class="split-layout">
                     <div>
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                            <h4 id="active-floor-title">Tables</h4>
-                            <button class="btn btn-primary" onclick="document.getElementById('table-form-container').style.display='block'">+ Add Table</button>
+                            <h4 id="active-floor-title">Viewing Tables</h4>
+                            <button class="btn btn-primary" onclick="showTableForm()">+ Add Table</button>
                         </div>
-                        <div id="table-form-container" class="card" style="display: none; margin-bottom: 15px; background: #F9FAFB;">
-                            <form id="table-form" style="display: flex; gap: 10px; align-items: flex-end;" onsubmit="handleTableSubmit(event)">
-                                <input type="hidden" id="table-id">
-                                <div class="form-group" style="margin: 0; flex: 1;"><label>Table Name/Number *</label><input type="text" id="table-name" required></div>
-                                <div class="form-group" style="margin: 0; flex: 1;"><label>Capacity</label><input type="number" id="table-cap" value="4" required></div>
-                                <button type="submit" class="btn btn-primary">Save Table</button>
-                            </form>
-                        </div>
+                        <form id="table-form" style="display: none; gap: 10px; align-items: flex-end; margin-bottom: 15px; background: #F9FAFB; padding: 10px; border-radius: 8px;" onsubmit="handleTableSubmit(event)">
+                            <input type="hidden" id="table-id">
+                            <div class="form-group" style="margin: 0; flex: 1;"><label>Table Name/Number *</label><input type="text" id="table-name" required></div>
+                            <button type="submit" class="btn btn-primary">Save Table</button>
+                            <button type="button" class="btn btn-outline" onclick="this.parentElement.style.display='none'">Cancel</button>
+                        </form>
                         <div class="table-card-grid" id="tables-container"></div>
                     </div>
                     <div class="card">
                         <h4>Add Reservation</h4>
-                        <form class="system-form form-grid" data-success="Table Reserved Successfully!">
-                            <div class="form-group"><label>Guest Name *</label><input type="text" required></div>
+                        <form id="reservation-form" class="form-grid" style="margin-top: 10px;" onsubmit="handleReservationSubmit(event)">
+                            <div class="form-group" style="grid-column: 1/-1;"><label>Select Table *</label><select required id="reservation-table-select"></select></div>
+                            <div class="form-group"><label>Guest Name *</label><input type="text" id="res-guest" required></div>
                             <div class="form-group"><label>Time *</label><input type="time" required></div>
-                            <div class="form-group" style="grid-column: 1 / -1;"><label>Select Table *</label><select required id="reservation-table-select"></select></div>
                             <button type="submit" class="btn btn-primary" style="grid-column: 1 / -1; justify-content: center;">Reserve Table</button>
                         </form>
                     </div>
@@ -193,151 +161,126 @@
 
             <div id="menu" class="view">
                 <h3 class="header-title">📋 Menu Master Configuration</h3>
+                
                 <div class="card" style="margin-bottom: 15px; padding: 10px 15px; overflow-x: auto;">
                     <div style="display: flex; gap: 10px; white-space: nowrap;">
                         <button class="sub-tab active" onclick="switchMenuTab('menu-items', this)">🍔 Items</button>
                         <button class="sub-tab" onclick="switchMenuTab('menu-categories', this)">📁 Categories</button>
                         <button class="sub-tab" onclick="switchMenuTab('menu-groups', this)">🏢 Groups</button>
-                        <button class="sub-tab" onclick="switchMenuTab('menu-variants', this)">🔀 Variants</button>
-                        <button class="sub-tab" onclick="switchMenuTab('menu-addons', this)">➕ Add-ons</button>
                         <button class="sub-tab" onclick="switchMenuTab('menu-taxes', this)">💰 Taxes</button>
                     </div>
                 </div>
 
-                <div class="card" style="margin-bottom: 15px; padding: 10px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; background: #F9FAFB;">
-                    <strong>Bulk Actions:</strong>
-                    <button class="btn btn-outline">☑ Select All</button>
-                    <select class="btn btn-outline"><option>Set Status...</option><option>Active</option><option>Inactive</option></select>
-                    <div style="margin-left: auto; display: flex; gap: 10px;">
-                        <button class="btn btn-outline" onclick="downloadCSVTemplate()">📥 Import CSV</button>
-                        <button class="btn btn-outline">📤 Export CSV</button>
-                    </div>
-                </div>
-
                 <div id="menu-items" class="menu-sub-view active">
-                    <div class="card" style="margin-bottom: 20px;">
-                        <h3 class="header-title">➕ Add New Item</h3>
-                        <form id="item-form" onsubmit="handleItemSubmit(event)">
-                            <h4 style="margin: 15px 0 10px; color: var(--primary);">Group 1 - Identity</h4>
-                            <div class="form-grid">
-                                <div class="form-group"><label>Item Name *</label><input type="text" id="item-name" required></div>
-                                <div class="form-group"><label>Item Code / SKU</label><input type="text" id="item-sku"></div>
-                                <div class="form-group" style="grid-column: 1 / -1;"><label>Description</label><textarea id="item-desc" rows="2" maxlength="200"></textarea></div>
-                                <div class="form-group"><label>Category *</label><select id="item-category" required></select></div>
-                            </div>
-                            
-                            <h4 style="margin: 15px 0 10px; color: var(--primary);">Group 2 - Food Classification</h4>
-                            <div class="form-grid">
-                                <div class="form-group"><label>Food Type</label><select id="item-type"><option value="veg">🟢 Veg</option><option value="nonveg">🔴 Non-Veg</option><option value="egg">🟡 Egg</option></select></div>
-                                <div class="form-group"><label>Spice Level</label><select id="item-spice"><option value="mild">Mild</option><option value="medium">Medium</option><option value="spicy">Spicy</option></select></div>
-                                <div class="form-group"><label>Calories (kcal)</label><input type="number" id="item-cals"></div>
-                            </div>
-
-                            <h4 style="margin: 15px 0 10px; color: var(--primary);">Group 3 - Pricing & Channels</h4>
-                            <div style="background: #F9FAFB; padding: 15px; border-radius: 8px; border: 1px solid var(--border); overflow-x: auto;">
-                                <table style="width: 100%; text-align: left;">
-                                    <tr><th>Dine-In</th><th>Takeaway</th><th>Online</th><th>Quick Del.</th></tr>
-                                    <tr>
-                                        <td><input type="number" id="price-dinein" placeholder="Price ₹" required style="width:90%"></td>
-                                        <td><input type="number" id="price-takeaway" placeholder="Price ₹" required style="width:90%"></td>
-                                        <td><input type="number" id="price-online" placeholder="Price ₹" required style="width:90%"></td>
-                                        <td><input type="number" id="price-quick" placeholder="Price ₹" required style="width:90%"></td>
-                                    </tr>
-                                    <tr>
-                                        <td><label><input type="checkbox" id="en-dinein" checked> Enabled</label></td>
-                                        <td><label><input type="checkbox" id="en-takeaway" checked> Enabled</label></td>
-                                        <td><label><input type="checkbox" id="en-online" checked> Enabled</label></td>
-                                        <td><label><input type="checkbox" id="en-quick" checked> Enabled</label></td>
-                                    </tr>
+                    <div class="split-layout">
+                        <div class="card">
+                            <h3 class="header-title">➕ Item Form</h3>
+                            <form id="item-form" onsubmit="handleItemSubmit(event)">
+                                <input type="hidden" id="item-id">
+                                <div class="form-grid">
+                                    <div class="form-group"><label>Item Name *</label><input type="text" id="item-name" required></div>
+                                    <div class="form-group"><label>Category *</label><select id="item-category" required></select></div>
+                                    <div class="form-group"><label>Food Type</label><select id="item-type"><option value="veg">🟢 Veg</option><option value="nonveg">🔴 Non-Veg</option></select></div>
+                                    <div class="form-group"><label>Tax Profile *</label><select id="item-tax" required></select></div>
+                                </div>
+                                <div style="background: #F9FAFB; padding: 10px; border-radius: 8px; margin: 15px 0;">
+                                    <label>Prices (₹) *</label>
+                                    <div style="display: flex; gap: 10px; margin-top: 5px;">
+                                        <input type="number" id="price-dinein" placeholder="Dine-In" required>
+                                        <input type="number" id="price-takeaway" placeholder="Takeaway" required>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Item</button>
+                                <button type="button" class="btn btn-outline" onclick="document.getElementById('item-form').reset(); document.getElementById('item-id').value='';">Clear</button>
+                            </form>
+                        </div>
+                        <div class="card">
+                            <div class="table-container">
+                                <table class="table-responsive">
+                                    <thead><tr><th>Item</th><th>Category</th><th>Prices (DI/TA)</th><th>Action</th></tr></thead>
+                                    <tbody id="items-table-body"></tbody>
                                 </table>
                             </div>
-
-                            <h4 style="margin: 15px 0 10px; color: var(--primary);">Group 4 - Business & Variants</h4>
-                            <div class="form-grid">
-                                <div class="form-group"><label>Tax Profile *</label><select id="item-tax" required></select></div>
-                                <div class="form-group"><label>Status</label><select id="item-status"><option value="true">Active</option><option value="false">Inactive</option></select></div>
-                                <div class="form-group"><label>Link Variants</label><select id="item-variant"><option value="">-- None --</option></select></div>
-                                <div class="form-group"><label>Link Add-ons</label><select id="item-addon"><option value="">-- None --</option></select></div>
-                            </div>
-                            <button type="submit" class="btn btn-primary" style="margin-top: 15px;">Save Item</button>
-                        </form>
-                    </div>
-                    <div class="card">
-                        <div class="table-container">
-                            <table class="table-responsive">
-                                <thead><tr><th>Code</th><th>Item</th><th>Category</th><th>Prices (DI/TA/OL/QD)</th><th>Type</th><th>Status</th></tr></thead>
-                                <tbody id="items-table-body"></tbody>
-                            </table>
                         </div>
                     </div>
                 </div>
 
                 <div id="menu-categories" class="menu-sub-view" style="display: none;">
                     <div class="split-layout">
-                        <div class="card"><h3 class="header-title">➕ Add Category</h3><form class="system-form" data-success="Category Saved"><div class="form-group"><label>Name *</label><input type="text" required></div><button class="btn btn-primary">Save</button></form></div>
-                        <div class="card"><div class="table-container"><table class="table-responsive"><thead><tr><th>Category</th><th>Group</th><th>Status</th></tr></thead><tbody id="cats-table-body"></tbody></table></div></div>
+                        <div class="card">
+                            <h3 class="header-title">➕ Category Form</h3>
+                            <form id="category-form" onsubmit="handleCategorySubmit(event)">
+                                <input type="hidden" id="cat-id">
+                                <div class="form-group"><label>Name *</label><input type="text" id="cat-name" required></div>
+                                <div class="form-group"><label>Belongs to Group *</label><select id="cat-group" required></select></div>
+                                <button type="submit" class="btn btn-primary">Save Category</button>
+                            </form>
+                        </div>
+                        <div class="card">
+                            <div class="table-container">
+                                <table class="table-responsive">
+                                    <thead><tr><th>Category</th><th>Group</th><th>Action</th></tr></thead>
+                                    <tbody id="cats-table-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
                 <div id="menu-groups" class="menu-sub-view" style="display: none;">
                     <div class="split-layout">
-                        <div class="card"><h3 class="header-title">➕ Add Group</h3><form class="system-form" data-success="Group Saved"><div class="form-group"><label>Name *</label><input type="text" required></div><button class="btn btn-primary">Save</button></form></div>
-                        <div class="card"><div class="table-container"><table class="table-responsive"><thead><tr><th>Group</th><th>Printer</th><th>Status</th></tr></thead><tbody id="groups-table-body"></tbody></table></div></div>
-                    </div>
-                </div>
-
-                <div id="menu-variants" class="menu-sub-view" style="display: none;">
-                    <div class="card"><h3 class="header-title">➕ Add Variant Group</h3><form class="system-form" data-success="Variant Saved"><div class="form-group"><label>Name *</label><input type="text" required></div><button class="btn btn-primary">Save Variant</button></form></div>
-                    <div class="card" style="margin-top: 15px;"><div class="table-container"><table class="table-responsive"><thead><tr><th>Variant Group</th><th>Options & Prices</th><th>Type</th></tr></thead><tbody id="variants-table-body"></tbody></table></div></div>
-                </div>
-
-                <div id="menu-addons" class="menu-sub-view" style="display: none;">
-                    <div class="split-layout">
-                        <div class="card"><h3 class="header-title">➕ Add Add-on Group</h3><form class="system-form" data-success="Add-on Saved"><div class="form-group"><label>Name *</label><input type="text" required></div><button class="btn btn-primary">Save Add-on</button></form></div>
-                        <div class="card"><div class="table-container"><table class="table-responsive"><thead><tr><th>Group</th><th>Min-Max</th></tr></thead><tbody id="addons-table-body"></tbody></table></div></div>
+                        <div class="card">
+                            <h3 class="header-title">➕ Group Form</h3>
+                            <form id="group-form" onsubmit="handleGroupSubmit(event)">
+                                <input type="hidden" id="group-id">
+                                <div class="form-group"><label>Group Name *</label><input type="text" id="group-name" required></div>
+                                <button type="submit" class="btn btn-primary">Save Group</button>
+                            </form>
+                        </div>
+                        <div class="card">
+                            <div class="table-container">
+                                <table class="table-responsive">
+                                    <thead><tr><th>Group Name</th><th>Action</th></tr></thead>
+                                    <tbody id="groups-table-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <div id="menu-taxes" class="menu-sub-view" style="display: none;">
                     <div class="split-layout">
-                        <div class="card"><h3 class="header-title">➕ Add Tax</h3><form class="system-form" data-success="Tax Saved"><div class="form-group"><label>Name *</label><input type="text" required></div><button class="btn btn-primary">Save</button></form></div>
-                        <div class="card"><div class="table-container"><table class="table-responsive"><thead><tr><th>Name</th><th>Rate</th><th>Type</th></tr></thead><tbody id="taxes-table-body"></tbody></table></div></div>
+                        <div class="card">
+                            <h3 class="header-title">➕ Tax Form</h3>
+                            <form id="tax-form" onsubmit="handleTaxSubmit(event)">
+                                <input type="hidden" id="tax-id">
+                                <div class="form-group"><label>Tax Name *</label><input type="text" id="tax-name" required></div>
+                                <div class="form-group"><label>Rate (%) *</label><input type="number" id="tax-rate" required></div>
+                                <div class="form-group"><label>Type *</label><select id="tax-type"><option value="forward">Forward (Exclusive)</option><option value="backward">Backward (Inclusive)</option></select></div>
+                                <button type="submit" class="btn btn-primary">Save Tax</button>
+                            </form>
+                        </div>
+                        <div class="card">
+                            <div class="table-container">
+                                <table class="table-responsive">
+                                    <thead><tr><th>Name</th><th>Rate</th><th>Type</th><th>Action</th></tr></thead>
+                                    <tbody id="taxes-table-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div id="kitchen" class="view">
                 <h3 class="header-title">👨‍🍳 Live Kitchen Display (KDS)</h3>
-                <div class="grid-cards" id="kds-container">
-                    <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">No pending orders in the kitchen.</div>
-                </div>
+                <div class="grid-cards" id="kds-container"></div>
             </div>
 
-            <div id="online-orders" class="view">
-                <h3 class="header-title">🛵 Online Order Aggregator</h3>
-                <div class="grid-cards">
-                    <div class="card" style="border-top: 4px solid #E23744;"><h3>Zomato</h3><h2 style="margin:10px 0;">1 Pending</h2></div>
-                    <div class="card" style="border-top: 4px solid #FC8019;"><h3>Swiggy</h3><h2 style="margin:10px 0;">0 Pending</h2></div>
-                </div>
-                <div class="card">
-                    <div class="table-container">
-                        <table class="table-responsive">
-                            <tr><th>Platform</th><th>Order ID</th><th>Amount</th><th>Status</th><th>Action</th></tr>
-                            <tr><td><span class="badge" style="background:#E23744; color:white;">Zomato</span></td><td>#Z-8821</td><td>₹ 650</td><td>Pending</td><td><button class="btn btn-primary" onclick="acceptOnlineOrder()">Accept to KDS</button></td></tr>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div id="tracking" class="view"><div class="card">📍 Map placeholder for rider tracking.</div></div>
-            <div id="inventory" class="view"><div class="split-layout"><div class="card"><h3 class="header-title">📦 Add Stock</h3><form class="system-form form-grid"><div class="form-group"><label>Item *</label><input type="text" required></div><button class="btn btn-primary" style="grid-column: 1/-1;">Update</button></form></div><div class="card"><div class="table-container"><table class="table-responsive"><thead><tr><th>Item</th><th>Current Qty</th><th>Reorder</th></tr></thead><tbody id="inventory-table-body"></tbody></table></div></div></div></div>
-            <div id="crm" class="view"><div class="card"><div class="table-container"><table class="table-responsive"><thead><tr><th>Name</th><th>Phone</th><th>Visits</th><th>Spent</th><th>Pts</th></tr></thead><tbody id="crm-table-body"></tbody></table></div></div></div>
-            <div id="loyalty" class="view"><div class="card"><form class="system-form form-grid" data-success="Points Processed"><div class="form-group"><label>Phone *</label><input type="text" required></div><button class="btn btn-primary">Process Points</button></form></div></div>
-            <div id="feedback" class="view"><div class="card"><table class="table-responsive"><tr><th>Customer</th><th>Rating</th><th>Comments</th></tr><tr><td>Ankit</td><td>⭐⭐⭐⭐⭐</td><td>"Amazing butter chicken!"</td></tr></table></div></div>
-            <div id="token" class="view"><div class="card" style="text-align: center; padding: 40px;"><h1 style="font-size: 48px; color: var(--primary);">Token #45</h1><p>Now Serving</p><button class="btn btn-primary mt-3" onclick="triggerToast('Called Next', 'success')">Call Next →</button></div></div>
-            <div id="expenses" class="view"><div class="card"><form class="system-form form-grid" data-success="Expense Saved"><div class="form-group"><label>Category *</label><select><option>Utilities</option><option>Salary</option></select></div><div class="form-group"><label>Amount *</label><input type="number" required></div><button class="btn btn-primary" style="grid-column: 1/-1;">Save Expense</button></form></div></div>
-            <div id="reports" class="view"><div class="card"><form class="system-form form-grid" data-success="Downloading CSV..."><div class="form-group"><label>Type *</label><select><option>Daily Sales</option></select></div><button class="btn btn-primary" onclick="downloadCSVReport()">Download CSV</button></form></div></div>
-            <div id="access" class="view"><div class="card"><table class="table-responsive"><tr><th>Name</th><th>Role</th><th>Action</th></tr><tr><td>Admin</td><td>Manager</td><td><button class="btn btn-outline">Edit</button></td></tr></table></div></div>
+            <div id="online-orders" class="view"><div class="card">Online Orders Integrations</div></div>
+            <div id="inventory" class="view"><div class="card">Inventory Tracking</div></div>
+            <div id="crm" class="view"><div class="card">Customer Relationship</div></div>
+            <div id="reports" class="view"><div class="card">Business Reports</div></div>
 
         </div>
     </div>
