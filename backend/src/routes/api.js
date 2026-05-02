@@ -1,91 +1,77 @@
 const express = require('express');
 const dbPool = require('../config/db');
 
-// Repositories & Controllers
+// Utils
+const TransactionManager = require('../utils/TransactionManager');
+
+// Repositories
 const BaseRepository = require('../repositories/BaseRepository');
-const BaseController = require('../controllers/BaseController');
 
 // Services
 const BaseService = require('../services/BaseService');
-const { GroupService, FloorService } = require('../services/MenuServices');
+const { GroupService, CategoryService } = require('../services/MenuServices');
+const { FloorService, TableService } = require('../services/TableServices');
 const OrderService = require('../services/OrderService');
+const DashboardService = require('../services/DashboardService');
+
+// Controllers
+const BaseController = require('../controllers/BaseController');
+const DashboardController = require('../controllers/DashboardController');
 
 const router = express.Router();
 
-/**
- * Helper function to dynamically create full CRUD routes for a given service
- */
-function makeRoute(svc) {
+function createRoute(serviceInstance) {
     const r = express.Router();
-    const c = new BaseController(svc);
-    
-    r.get('/', c.getAll.bind(c));
-    r.get('/:id', c.getById.bind(c));
-    r.post('/', c.create.bind(c));
-    r.put('/:id', c.update.bind(c));
-    r.delete('/:id', c.delete.bind(c));
-    
+    const ctrl = new BaseController(serviceInstance);
+    r.get('/', (req, res, next) => ctrl.getAll(req, res, next));
+    r.get('/:id', (req, res, next) => ctrl.getById(req, res, next));
+    r.post('/', (req, res, next) => ctrl.create(req, res, next));
+    r.put('/:id', (req, res, next) => ctrl.update(req, res, next));
+    r.delete('/:id', (req, res, next) => ctrl.delete(req, res, next));
     return r;
 }
 
-// ==========================================
-// 1. STANDARD CRUD ENDPOINTS
-// ==========================================
-const tables = [
-    'taxes', 'variants', 'addons', 'items', 'inventory', 
-    'customers', 'feedback', 'tokens', 'expenses', 'staff', 
-    'online_orders', 'tables', 'categories'
-];
+// --- Repositories ---
+const groupRepo = new BaseRepository(dbPool, 'menu_groups');
+const catRepo = new BaseRepository(dbPool, 'categories');
+const itemRepo = new BaseRepository(dbPool, 'items');
+const floorRepo = new BaseRepository(dbPool, 'floors');
+const tableRepo = new BaseRepository(dbPool, 'tables');
+const orderRepo = new BaseRepository(dbPool, 'orders');
+const kotRepo = new BaseRepository(dbPool, 'kots');
+const invRepo = new BaseRepository(dbPool, 'inventory');
 
-// Dynamically generate routes for simple tables
-tables.forEach(t => {
-    const repository = new BaseRepository(dbPool, t);
-    const service = new BaseService(repository);
-    router.use(`/${t}`, makeRoute(service));
+// --- Relational Routes ---
+router.use('/groups', createRoute(new GroupService(groupRepo, catRepo)));
+router.use('/categories', createRoute(new CategoryService(catRepo, itemRepo)));
+router.use('/floors', createRoute(new FloorService(floorRepo, tableRepo)));
+router.use('/tables', createRoute(new TableService(tableRepo)));
+
+// --- Standard CRUD Routes ---
+const simpleTables = ['taxes', 'variants', 'addons', 'items', 'inventory', 'customers', 'feedback', 'tokens', 'expenses', 'staff', 'online_orders'];
+simpleTables.forEach(t => router.use(`/${t}`, createRoute(new BaseService(new BaseRepository(dbPool, t)))));
+
+// --- Operational Routes ---
+const txManager = new TransactionManager(dbPool);
+const orderSvc = new OrderService(orderRepo, kotRepo, tableRepo, invRepo, txManager);
+
+router.post('/orders/place', async (req, res, next) => { 
+    try { res.json({ success: true, data: await orderSvc.placeOrder(req.body) }); } catch(e){ next(e); }
 });
 
-// ==========================================
-// 2. RELATIONAL ENDPOINTS (Custom Services)
-// ==========================================
-router.use('/groups', makeRoute(
-    new GroupService(
-        new BaseRepository(dbPool, 'menu_groups'), 
-        new BaseRepository(dbPool, 'categories')
-    )
-));
+router.post('/orders/settle', async (req, res, next) => { 
+    try { res.json({ success: true, data: await orderSvc.settleBill(req.body) }); } catch(e){ next(e); }
+});
 
-router.use('/floors', makeRoute(
-    new FloorService(
-        new BaseRepository(dbPool, 'floors'), 
-        new BaseRepository(dbPool, 'tables')
-    )
-));
-
-// ==========================================
-// 3. OPERATIONAL ENDPOINTS (Orders, KOT, Dashboard)
-// ==========================================
-const ordSvc = new OrderService(dbPool);
-
-router.post('/orders/place', async (req, res, nxt) => { 
+router.put('/kots/:id/ready', async (req, res, next) => { 
     try { 
-        res.json({ data: await ordSvc.placeOrder(req.body) });
-    } catch(e) { 
-        nxt(e); 
-    }
+        await kotRepo.update(req.params.id, { status: 'ready' });
+        res.json({ success: true }); 
+    } catch(e){ next(e); }
 });
 
-router.post('/orders/settle', async (req, res, nxt) => { 
-    try { 
-        res.json({ data: await ordSvc.settleBill(req.body) });
-    } catch(e) { 
-        nxt(e); 
-    }
-});
-
-router.get('/dashboard', async (req, res) => { 
-    const [[{ rev }]] = await dbPool.query('SELECT SUM(total) as rev FROM bills'); 
-    res.json({ data: { revenue: rev || 0 } }); 
-});
+// --- Dashboard Routes ---
+const dashCtrl = new DashboardController(new DashboardService(dbPool));
+router.get('/dashboard', (req, res, next) => dashCtrl.getSummary(req, res, next));
 
 module.exports = router;
-
