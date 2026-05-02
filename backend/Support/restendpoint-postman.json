@@ -1,0 +1,149 @@
+{
+  "info": {
+    "name": "RestroOS Full API Collection",
+    "description": "Complete API endpoints for all 16 RestroOS modules.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "jwt", "value": "PASTE_COOKIE_VALUE_HERE", "type": "string" },
+    { "key": "baseUrl", "value": "https://restro-2026-git-main-searchkotas-projects.vercel.app/api", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "1. Dashboard",
+      "item": [
+        { "name": "Get Summary", "request": { "method": "GET", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}], "url": "{{baseUrl}}/dashboard" } }
+      ]
+    },
+    {
+      "name": "2. Orders & Billing",
+      "item": [
+        { "name": "Place Order (Fire KOT)", "request": { "method": "POST", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}, {"key": "Content-Type", "value": "application/json"}], "body": { "mode": "raw", "raw": "{\"table_id\": \"t1\", \"order_type\": \"dinein\", \"items\": [{\"id\": \"i1\", \"name\": \"Paneer Tikka\", \"qty\": 2, \"price\": 280}], \"total\": 560}" }, "url": "{{baseUrl}}/orders/place" } },
+        { "name": "Settle Bill", "request": { "method": "POST", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}, {"key": "Content-Type", "value": "application/json"}], "body": { "mode": "raw", "raw": "{\"order_id\": \"ord_123456789\", \"table_id\": \"t1\", \"items\": [{\"name\": \"Paneer Tikka\", \"qty\": 2}], \"total\": 560}" }, "url": "{{baseUrl}}/orders/settle" } }
+      ]
+    },
+    {
+      "name": "3. Kitchen (KDS)",
+      "item": [
+        { "name": "Get Pending KOTs", "request": { "method": "GET", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}], "url": "{{baseUrl}}/kots" } },
+        { "name": "Mark KOT Ready", "request": { "method": "PUT", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}], "url": "{{baseUrl}}/kots/kot_123/ready" } }
+      ]
+    },
+    {
+      "name": "4. Menu Items",
+      "item": [
+        { "name": "Get All Items", "request": { "method": "GET", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}], "url": "{{baseUrl}}/items" } },
+        { "name": "Create Item", "request": { "method": "POST", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}, {"key": "Content-Type", "value": "application/json"}], "body": { "mode": "raw", "raw": "{\"id\": \"i3\", \"name\": \"Garlic Naan\", \"category_id\": \"c1\", \"prices\": {\"dinein\": 50}, \"channels\": {\"dinein\": true}}" }, "url": "{{baseUrl}}/items" } },
+        { "name": "Update Item", "request": { "method": "PUT", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}, {"key": "Content-Type", "value": "application/json"}], "body": { "mode": "raw", "raw": "{\"name\": \"Garlic Naan Updated\"}" }, "url": "{{baseUrl}}/items/i3" } },
+        { "name": "Delete Item", "request": { "method": "DELETE", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}], "url": "{{baseUrl}}/items/i3" } }
+      ]
+    },
+    {
+      "name": "5. Categories",
+      "item": [
+        { "name": "Get All Categories", "request": { "method": "GET", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}], "url": "{{baseUrl}}/categories" } },
+        { "name": "Create Category", "request": { "method": "POST", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}, {"key": "Content-Type", "value": "application/json"}], "body": { "mode": "raw", "raw": "{\"id\": \"c3\", \"name\": \"Desserts\", \"group_id\": \"g1\"}" }, "url": "{{baseUrl}}/categories" } },
+        { "name": "Update Category", "request": { "method": "PUT", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}, {"key": "Content-Type", "value": "application/json"}], "body": { "mode": "raw", "raw": "{\"name\": \"Sweet Desserts\"}" }, "url": "{{baseUrl}}/categories/c3" } },
+        { "name": "Delete Category", "request": { "method": "DELETE", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}], "url": "{{baseUrl}}/categories/c3" } }
+      ]
+    },
+    {
+      "name": "6. Groups",
+      "item": [
+        { "name": "Get All Groups", "request": { "method": "GET", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}], "url": "{{baseUrl}}/groups" } },
+        { "name": "Create Group", "request": { "method": "POST", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}, {"key": "Content-Type", "value": "application/json"}], "body": { "mode": "raw", "raw": "{\"id\": \"g3\", \"name\": \"Bakery\", \"printer\": \"KDS-2\"}" }, "url": "{{baseUrl}}/groups" } },
+        { "name": "Update Group", "request": { "method": "PUT", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}, {"key": "Content-Type", "value": "application/json"}], "body": { "mode": "raw", "raw": "{\"name\": \"Bakery & Sweets\"}" }, "url": "{{baseUrl}}/groups/g3" } },
+        { "name": "Delete Group", "request": { "method": "DELETE", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}], "url": "{{baseUrl}}/groups/g3" } }
+      ]
+    },
+    {
+      "name": "7. Floors",
+      "item": [
+        { "name": "Get All Floors", "request": { "method": "GET", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}], "url": "{{baseUrl}}/floors" } },
+        { "name": "Create Floor", "request": { "method": "POST", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}, {"key": "Content-Type", "value": "application/json"}], "body": { "mode": "raw", "raw": "{\"id\": \"f2\", \"name\": \"Outdoor Patio\"}" }, "url": "{{baseUrl}}/floors" } },
+        { "name": "Update Floor", "request": { "method": "PUT", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}, {"key": "Content-Type", "value": "application/json"}], "body": { "mode": "raw", "raw": "{\"name\": \"Patio Area\"}" }, "url": "{{baseUrl}}/floors/f2" } },
+        { "name": "Delete Floor", "request": { "method": "DELETE", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}], "url": "{{baseUrl}}/floors/f2" } }
+      ]
+    },
+    {
+      "name": "8. Tables",
+      "item": [
+        { "name": "Get All Tables", "request": { "method": "GET", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}], "url": "{{baseUrl}}/tables" } },
+        { "name": "Create Table", "request": { "method": "POST", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}, {"key": "Content-Type", "value": "application/json"}], "body": { "mode": "raw", "raw": "{\"id\": \"t3\", \"floor_id\": \"f2\", \"name\": \"T-3\", \"capacity\": 4}" }, "url": "{{baseUrl}}/tables" } },
+        { "name": "Update Table", "request": { "method": "PUT", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}, {"key": "Content-Type", "value": "application/json"}], "body": { "mode": "raw", "raw": "{\"status\": \"reserved\"}" }, "url": "{{baseUrl}}/tables/t3" } },
+        { "name": "Delete Table", "request": { "method": "DELETE", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}], "url": "{{baseUrl}}/tables/t3" } }
+      ]
+    },
+    {
+      "name": "9. Inventory",
+      "item": [
+        { "name": "Get Inventory", "request": { "method": "GET", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}], "url": "{{baseUrl}}/inventory" } },
+        { "name": "Add Stock", "request": { "method": "POST", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}, {"key": "Content-Type", "value": "application/json"}], "body": { "mode": "raw", "raw": "{\"id\": \"inv_1\", \"item_name\": \"Chicken\", \"available_qty\": 50}" }, "url": "{{baseUrl}}/inventory" } },
+        { "name": "Update Stock", "request": { "method": "PUT", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}, {"key": "Content-Type", "value": "application/json"}], "body": { "mode": "raw", "raw": "{\"available_qty\": 40}" }, "url": "{{baseUrl}}/inventory/inv_1" } },
+        { "name": "Delete Stock", "request": { "method": "DELETE", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}], "url": "{{baseUrl}}/inventory/inv_1" } }
+      ]
+    },
+    {
+      "name": "10. CRM & Customers",
+      "item": [
+        { "name": "Get Customers", "request": { "method": "GET", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}], "url": "{{baseUrl}}/customers" } },
+        { "name": "Add Customer", "request": { "method": "POST", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}, {"key": "Content-Type", "value": "application/json"}], "body": { "mode": "raw", "raw": "{\"id\": \"cust_1\", \"name\": \"Aman\", \"phone\": \"9876543210\"}" }, "url": "{{baseUrl}}/customers" } },
+        { "name": "Update Customer", "request": { "method": "PUT", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}, {"key": "Content-Type", "value": "application/json"}], "body": { "mode": "raw", "raw": "{\"points\": 50}" }, "url": "{{baseUrl}}/customers/cust_1" } },
+        { "name": "Delete Customer", "request": { "method": "DELETE", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}], "url": "{{baseUrl}}/customers/cust_1" } }
+      ]
+    },
+    {
+      "name": "11. Expenses",
+      "item": [
+        { "name": "Get Expenses", "request": { "method": "GET", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}], "url": "{{baseUrl}}/expenses" } },
+        { "name": "Add Expense", "request": { "method": "POST", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}, {"key": "Content-Type", "value": "application/json"}], "body": { "mode": "raw", "raw": "{\"id\": \"exp_1\", \"category\": \"Utilities\", \"amount\": 1500}" }, "url": "{{baseUrl}}/expenses" } },
+        { "name": "Update Expense", "request": { "method": "PUT", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}, {"key": "Content-Type", "value": "application/json"}], "body": { "mode": "raw", "raw": "{\"amount\": 1600}" }, "url": "{{baseUrl}}/expenses/exp_1" } },
+        { "name": "Delete Expense", "request": { "method": "DELETE", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}], "url": "{{baseUrl}}/expenses/exp_1" } }
+      ]
+    },
+    {
+      "name": "12. Feedback",
+      "item": [
+        { "name": "Get Feedback", "request": { "method": "GET", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}], "url": "{{baseUrl}}/feedback" } },
+        { "name": "Add Feedback", "request": { "method": "POST", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}, {"key": "Content-Type", "value": "application/json"}], "body": { "mode": "raw", "raw": "{\"id\": \"fb_1\", \"customer\": \"Ravi\", \"rating\": 5}" }, "url": "{{baseUrl}}/feedback" } },
+        { "name": "Delete Feedback", "request": { "method": "DELETE", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}], "url": "{{baseUrl}}/feedback/fb_1" } }
+      ]
+    },
+    {
+      "name": "13. Tokens",
+      "item": [
+        { "name": "Get Tokens", "request": { "method": "GET", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}], "url": "{{baseUrl}}/tokens" } },
+        { "name": "Add Token", "request": { "method": "POST", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}, {"key": "Content-Type", "value": "application/json"}], "body": { "mode": "raw", "raw": "{\"id\": \"tok_1\", \"token_number\": 42, \"status\": \"waiting\"}" }, "url": "{{baseUrl}}/tokens" } },
+        { "name": "Delete Token", "request": { "method": "DELETE", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}], "url": "{{baseUrl}}/tokens/tok_1" } }
+      ]
+    },
+    {
+      "name": "14. Staff",
+      "item": [
+        { "name": "Get Staff", "request": { "method": "GET", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}], "url": "{{baseUrl}}/staff" } },
+        { "name": "Add Staff", "request": { "method": "POST", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}, {"key": "Content-Type", "value": "application/json"}], "body": { "mode": "raw", "raw": "{\"id\": \"stf_1\", \"name\": \"Rahul\", \"role\": \"Manager\"}" }, "url": "{{baseUrl}}/staff" } },
+        { "name": "Update Staff", "request": { "method": "PUT", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}, {"key": "Content-Type", "value": "application/json"}], "body": { "mode": "raw", "raw": "{\"active\": false}" }, "url": "{{baseUrl}}/staff/stf_1" } },
+        { "name": "Delete Staff", "request": { "method": "DELETE", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}], "url": "{{baseUrl}}/staff/stf_1" } }
+      ]
+    },
+    {
+      "name": "15. Online Orders",
+      "item": [
+        { "name": "Get Online Orders", "request": { "method": "GET", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}], "url": "{{baseUrl}}/online_orders" } },
+        { "name": "Receive Webhook", "request": { "method": "POST", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}, {"key": "Content-Type", "value": "application/json"}], "body": { "mode": "raw", "raw": "{\"id\": \"oo_1\", \"platform\": \"Zomato\", \"amount\": 450}" }, "url": "{{baseUrl}}/online_orders" } },
+        { "name": "Delete Online Order", "request": { "method": "DELETE", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}], "url": "{{baseUrl}}/online_orders/oo_1" } }
+      ]
+    },
+    {
+      "name": "16. Configs (Taxes, Variants, Addons)",
+      "item": [
+        { "name": "Get Taxes", "request": { "method": "GET", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}], "url": "{{baseUrl}}/taxes" } },
+        { "name": "Add Tax", "request": { "method": "POST", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}, {"key": "Content-Type", "value": "application/json"}], "body": { "mode": "raw", "raw": "{\"id\": \"tax_1\", \"name\": \"GST 5%\", \"rate\": 5.0}" }, "url": "{{baseUrl}}/taxes" } },
+        { "name": "Get Variants", "request": { "method": "GET", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}], "url": "{{baseUrl}}/variants" } },
+        { "name": "Add Variant", "request": { "method": "POST", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}, {"key": "Content-Type", "value": "application/json"}], "body": { "mode": "raw", "raw": "{\"id\": \"var_1\", \"name\": \"Size\", \"options\": [{\"label\": \"Small\", \"price\": 0}]}" }, "url": "{{baseUrl}}/variants" } },
+        { "name": "Get Addons", "request": { "method": "GET", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}], "url": "{{baseUrl}}/addons" } },
+        { "name": "Add Addon", "request": { "method": "POST", "header": [{"key": "Cookie", "value": "_vercel_jwt={{jwt}};"}, {"key": "Content-Type", "value": "application/json"}], "body": { "mode": "raw", "raw": "{\"id\": \"add_1\", \"name\": \"Extra Cheese\"}" }, "url": "{{baseUrl}}/addons" } }
+      ]
+    }
+  ]
+}
